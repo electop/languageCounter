@@ -1,6 +1,7 @@
 import re
 import ssl
 import sys
+import html
 import urllib
 from urllib.request import urlopen
 from urllib.request import Request
@@ -26,11 +27,6 @@ def init():
 
     return True
 
-def cleanupString(text):
-
-    myBytes = text.encode('utf-8')
-    return myBytes.decode('unicode_escape')
-
 def main():
 
     if init():
@@ -49,7 +45,7 @@ def main():
             req.add_header('User-Agent', useragent)
 
             with urlopen(req, context=context) as response:
-                html = response.read().decode("utf-8")
+                htmlPage = response.read().decode("utf-8")
         except HTTPError as e:
             code = str(e.code)
             print('\n[ERR] HTTP Error: The server couldn\'t fulfill the request to\n%s\n+ Error Code: %s' %(tu, code))
@@ -59,7 +55,7 @@ def main():
             print('\n[ERR] URL Error: We failed to reach in\n%s\n+ Error Code: %s' %(tu, code))
             return False
 
-        body = re.search('<body.*/body>', html, re.I|re.S)
+        body = re.search('<body.*/body>', htmlPage, re.I|re.S)
         body = body.group()
         body = re.sub('<script.*?>.*?</script>', ' ', body, 0, re.I|re.S)
         body = body.\
@@ -77,8 +73,7 @@ def main():
         #print (tokens)
 
         for token in tokens:
-            #token = token.replace('(', '').replace(')', '').replace('中文', '')
-            #token = cleanupString(token)
+            token = html.unescape(token)
             if token.find('English') >= 0:
                 for validLanguage in validLanguages:
                     if token.find(validLanguage) >= 0:
@@ -105,4 +100,3 @@ def main():
 
 if __name__ == '__main__':
     print ('[END] Command returned %d' %int(main()))
-
