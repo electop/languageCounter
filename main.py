@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import re
 import ssl
 import sys
@@ -63,6 +65,7 @@ def main():
             replace('<p', '|<p').replace('p>', 'p>|').\
             replace('<ul', '|<ul').replace('ul>', 'ul>|').\
             replace('<li', '~<li').replace('li>', 'li>~').\
+            replace('<a', '~<a').replace('a>', 'a>~').\
             replace('<option', '~<option').replace('option>', 'option>~')
         #print (body)
         body = re.sub('<.+?>', '', body, 0, re.I|re.S)
@@ -74,7 +77,7 @@ def main():
 
         for token in tokens:
             token = html.unescape(token)
-            if token.find('English') >= 0:
+            if token.find('English') >= 0 or token.find('ENGLISH') >= 0:
                 for validLanguage in validLanguages:
                     if token.find(validLanguage) >= 0:
                         results.append(token)
